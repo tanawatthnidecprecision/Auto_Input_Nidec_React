@@ -23,9 +23,9 @@ export default function DataAGV() {
   const [section_code, setSectionCode] = useState("");
   const [mc_index, setMc_index] = useState("");
   const [prod, setProd] = useState("");
-  const [line_no, setLine_no] = useState("");
+  const [line_no, setLine_no] = useState([]);
   const [line, setLine] = useState("");
-  const [mc, setMc] = useState("");
+  const [mc, setMc] = useState([]);
   const [m_c, setM_c] = useState("");
   const [time_table, setTime_table] = useState([]);
   const [time_start_fil, setTime_start] = useState([]);
@@ -112,6 +112,9 @@ export default function DataAGV() {
   const [showText, setShowText] = useState(false);
   const [time_value, setValue] = useState(null);
   const [value, onChange] = useState("10:00");
+
+
+
 
   //Selected time
   const [value_st1, setValueSt1] = useState("");
@@ -2237,10 +2240,7 @@ export default function DataAGV() {
   }, [table_time]);
 
   const [objectLoad, setObjectLoad] = useState({});
-
-  useEffect(() => {
-    console.log(objectLoad);
-  }, [objectLoad]);
+  const [chooseModel, setChooseModel] = useState([]);
 
   useEffect(() => {
     if (message !== undefined) {
@@ -2249,16 +2249,16 @@ export default function DataAGV() {
           let obj = JSON.parse(message.message);
           setObjectLoad(obj[0]);
           setRoom_room(obj[0].room);
-          // if(!prod_name.length){
-          //   setProd_name([{
-              
-          //   }])
-          // }
-          console.log("Message : ", obj[0]);
+          client.publish(
+            "/prod_name1",
+            JSON.stringify({
+              value: obj[0].grp_code,
+            })
+          );
+          console.log(obj[0]);
       }
       switch (message.topic) {
         case "/prod_group":
-          console.log(message.message)
           setMyArray(JSON.parse(message.message));
       }
       switch (message.topic) {
@@ -2417,37 +2417,31 @@ export default function DataAGV() {
                         >
                           Group product
                         </label>
-                        {/* <select
+                        <select
                           style={{ textAlign: "center" }}
                           className="select"
                           type="select"
                           placeholder="Room"
                           onChange={(e) => {
                             setProd(e);
-                            client.publish("/prod_name1", JSON.stringify(e));
+                            client.publish(
+                              "/prod_name1",
+                              JSON.stringify({
+                                value: e.target.value,
+                              })
+                            );
                           }}
                         >
                           {myArray.map((item) => (
                             <option
-                              selected={item.value == objectLoad.room}
+                              selected={item.value == objectLoad.grp_code}
                               key={item.value}
                               value={item.value}
                             >
                               {item.label}
                             </option>
                           ))}
-                        </select> */}
-                        <Select
-                          className="select"
-                          name="select_prod"
-                          placeholder="Group"
-                          onChange={(e) => {
-                            setProd(e);
-                            client.publish("/prod_name1", JSON.stringify(e));
-                          }}
-                          type="select"
-                          options={myArray}
-                        />
+                        </select>
                       </div>
 
                       <div>
@@ -2458,9 +2452,10 @@ export default function DataAGV() {
                           Model
                         </label>
                         <select
+                          style={{ textAlign: "center" }}
                           className="select"
                           type="select"
-                          placeholder="เลือก group ก่อน"
+                          placeholder="Room"
                           onChange={(e) => {
                             setModel(e);
                           }}
@@ -2484,16 +2479,25 @@ export default function DataAGV() {
                         >
                           Shift (กะ)
                         </label>
-                        <Select
+                        <select
+                          style={{ textAlign: "center" }}
                           className="select"
                           placeholder="Shift"
                           onChange={(e) => {
                             setShift(e);
                           }}
                           name="shift"
-                          type="select"
-                          options={options}
-                        />
+                        >
+                          {options.map((item) => (
+                            <option
+                              selected={item.value == objectLoad.shift}
+                              key={item.value}
+                              value={item.value}
+                            >
+                              {item.label}
+                            </option>
+                          ))}
+                        </select>
                       </div>
 
                       <label
@@ -3137,16 +3141,25 @@ export default function DataAGV() {
                         >
                           M/C No. Output (หมายเลขเครื่องเอาท์พุต)
                         </label>
-                        <Select
+                        <select
+                          style={{ textAlign: "center" }}
                           className="select"
                           placeholder="M/C"
                           onChange={(e) => {
                             setM_c(e);
                           }}
                           name="mc"
-                          type="select"
-                          options={mc}
-                        />
+                        >
+                          {mc.map((item) => (
+                            <option
+                              selected={item.value == objectLoad.mc}
+                              key={item.value}
+                              value={item.value}
+                            >
+                              {item.label}
+                            </option>
+                          ))}
+                        </select>
                       </div>
 
                       <div>
@@ -3156,16 +3169,25 @@ export default function DataAGV() {
                         >
                           Line (Ex. A0,A1)
                         </label>
-                        <Select
+                        <select
+                          style={{ textAlign: "center" }}
                           className="select"
                           placeholder="Ex.A0,A1"
                           onChange={(e) => {
                             setLine(e);
                           }}
                           name="line_no"
-                          type="select"
-                          options={line_no}
-                        />
+                        >
+                          {line_no.map((item) => (
+                            <option
+                              selected={item.value == objectLoad.line_no}
+                              key={item.value}
+                              value={item.value}
+                            >
+                              {item.label}
+                            </option>
+                          ))}
+                        </select>
                       </div>
 
                       <div>
@@ -3367,14 +3389,6 @@ export default function DataAGV() {
                       </div>
                     </div>
                     <div className="form-check mb-0.5">
-                      {/* <input
-                                type="checkbox"
-                                className="form-check-input"
-                                id="exampleCheck1"
-                            /> */}
-                      {/* <label className="form-check-label" for="exampleCheck1">
-                                Accept term and conditions
-                            </label> */}
                     </div>
                     <Button
                       type="submit"
@@ -3384,47 +3398,12 @@ export default function DataAGV() {
                       Submit
                     </Button>
                   </form>
-                  {/* <Button className="AGVbutton" variant="success" onClick={() => returnData('START')}>
-                                START
-                            </Button>
-                            <Button className="AGVbutton" variant="danger" onClick={() => returnData('STOP')}>
-                                STOP
-                            </Button>
-                            <Button className="AGVbutton" variant="warning" onClick={() => returnData('UTURN')}>
-                                U-TURN
-                            </Button> */}
                 </div>
               </div>
             </div>
-
-            {/* <div className="HookControl">
-                    <img className="imgIconControl" src={logoAGVhook}></img>
-                    <div className="panelControl">
-                        <div className="Panelbutton">
-                            <Button className="AGVbutton" variant="success" onClick={() => returnData('HOOKUP')}>
-                                Hook Up
-                            </Button>
-                            <Button className="AGVbutton" variant="danger" onClick={() => returnData('HOOKDOWN')}>
-                                Hook Down
-                            </Button>
-                        </div>
-
-                    </div>
-                </div> */}
           </div>
         </div>
-        {/* </div>} */}
       </div>
-      {/* <div >
-        ฺ<Button className="select-control" variant="outline-info" onClick={() => setVisible_select(!visible)}>
-        {visible_select ? 'Hide' : 'Time'}
-      </Button>
-      {visible_select && <div >
-        <TimePicker className="select-time" use12Hours format="h:mm a" Placeholder="select time" />
-        <TimePicker className="select-time" use12Hours format="h:mm a" placeholder="select time" />
-
-        </div>}
-        </div> */}
     </div>
   );
 }
