@@ -23,7 +23,6 @@ const Children = () => {
   
  
   function buttonCallBack(value) {
-    //console.log('value naja :',value.mc_index);
     // if (value.mc_dex === 1) {
     //   client.publish("/dash", value);
     // }
@@ -56,7 +55,7 @@ const Children = () => {
         // brokerUrl="ws://localhost:8083/mqtt"
         // brokerUrl="ws://192.168.0.121:8083/mqtt"
         // brokerUrl="ws://172.19.11.38:8083/mqtt"
-        brokerUrl="ws://172.19.12.167:8083/mqtt"
+        brokerUrl="ws://172.30.1.9:8083/mqtt"
         options="{username: 'rtai', password:'rtai'}"
       >
         <Children />
