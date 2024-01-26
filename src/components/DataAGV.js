@@ -2,7 +2,7 @@
 import Button from "react-bootstrap/Button";
 import manual from "./../images/manual.png";
 import ReactDOM from "react-dom";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Connector, useMqttState, useSubscription } from "mqtt-react-hooks";
 import Select from "react-select";
 import { TimePicker } from "antd";
@@ -16,8 +16,8 @@ export default function DataAGV() {
   const [prod_name, setProd_name] = useState([]);
   const [prod_name1, setProd_name1] = useState([]);
   const [model, setModel] = useState([]);
-  const [room_list, setRoom] = useState([]);
-  const [room, setRoom_room] = useState([]);
+  const [room_list, setRoomList] = useState([]);
+  const [roomInput, setRoomInput] = useState("");
   const [shift, setShift] = useState("");
   const [mc_id, setMc_id] = useState("");
   const [section_code, setSectionCode] = useState("");
@@ -28,6 +28,7 @@ export default function DataAGV() {
   const [mc, setMc] = useState([]);
   const [m_c, setM_c] = useState("");
   const [time_table, setTime_table] = useState([]);
+  const [timeTableInput, setTimeTableInput] = useState("");
   const [time_start_fil, setTime_start] = useState([]);
   const [time_stop_fil, setTime_stop] = useState([]);
   const [table_time, setTable_time] = useState("");
@@ -112,9 +113,6 @@ export default function DataAGV() {
   const [showText, setShowText] = useState(false);
   const [time_value, setValue] = useState(null);
   const [value, onChange] = useState("10:00");
-
-
-
 
   //Selected time
   const [value_st1, setValueSt1] = useState("");
@@ -287,6 +285,9 @@ export default function DataAGV() {
       ...input,
       [name]: value,
     });
+    let temp = objectForm;
+    temp[name] = value;
+    setObjectForm(temp);
   };
 
   const handleChange_time = (e) => {
@@ -316,23 +317,48 @@ export default function DataAGV() {
 
   function onSubmit(e) {
     e.preventDefault();
+    let jsonTemp = input;
+    jsonTemp["count"] = objectForm["count"];
+    jsonTemp["st_count"] = objectForm["st_count"];
+    jsonTemp["shift"] = shift;
+    jsonTemp["select_prod"] = prod;
+    jsonTemp["section_code"] = objectForm["section_code"];
+    jsonTemp["target"] = objectForm["target"];
+    jsonTemp["take_time"] = objectForm["take_time"];
+    jsonTemp["operator"] = objectForm["operator"];
+    jsonTemp["std_time"] = objectForm["std_time"];
+    jsonTemp["defective"] = objectForm["defective"];
+    jsonTemp["std_old"] = objectForm["std_old"];
+    jsonTemp["working_time"] = objectForm["working_time"];
+    jsonTemp["resp_person"] = objectForm["resp_person"];
     const data = {
-      input: input,
-      prod: prod,
-      shift: shift,
-      room: room,
-      line: line,
-      m_c: m_c,
+      input: jsonTemp,
+      prod: {
+        value: prod,
+      },
+      shift: {
+        value: shift,
+      },
+      room: {
+        value: roomInput,
+      },
+      line: {
+        value: line,
+      },
+      m_c: {
+        value: m_c,
+      },
       model: model,
-      table_time: table_time,
+      table_time: {
+        value: timeTableInput,
+      },
       mc_index: mc_index,
-      // index_con:0,
+      index_con: 0,
 
       index_con: index_con[0].index + 1,
     };
 
     const json = JSON.stringify(data);
-    console.clear();
 
     if (data.mc_index.label === 1) {
       client.publish(
@@ -2241,6 +2267,7 @@ export default function DataAGV() {
 
   const [objectLoad, setObjectLoad] = useState({});
   const [chooseModel, setChooseModel] = useState([]);
+  const [objectForm, setObjectForm] = useState({});
 
   useEffect(() => {
     if (message !== undefined) {
@@ -2248,14 +2275,37 @@ export default function DataAGV() {
         case "/set_mc_config":
           let obj = JSON.parse(message.message);
           setObjectLoad(obj[0]);
-          setRoom_room(obj[0].room);
           client.publish(
             "/prod_name1",
             JSON.stringify({
               value: obj[0].grp_code,
             })
           );
-          console.log(obj[0]);
+          let temp = objectForm;
+          temp["resp_person"] = obj[0].resp_person;
+          temp["section_code"] = obj[0].section_code;
+          temp["target"] = obj[0].target;
+          temp["st_count"] = obj[0].st_count;
+          temp["count"] = obj[0].count;
+          temp["take_time"] = obj[0].take_time;
+          temp["std_time"] = obj[0].std;
+          temp["st_count"] = obj[0].start_count;
+          temp["count"] = obj[0].step_count;
+          temp["operator"] = obj[0].qty_operator;
+          temp["working_time"] = obj[0].working_time;
+          temp["defective"] = obj[0].def_limit;
+
+          setRoomInput(obj[0].room);
+          setM_c(obj[0].mc);
+          setModel({
+            label: obj[0].name,
+            value: obj[0].prod_id,
+          });
+          setLine(obj[0].line_no);
+          setShift(obj[0].shift);
+          setProd(obj[0].prod_id);
+          setTimeTableInput(obj[0].period_code);
+          setObjectForm(temp);
       }
       switch (message.topic) {
         case "/prod_group":
@@ -2267,7 +2317,7 @@ export default function DataAGV() {
       }
       switch (message.topic) {
         case "/room":
-          setRoom(JSON.parse(message.message));
+          setRoomList(JSON.parse(message.message));
       }
       switch (message.topic) {
         case "/line_no":
@@ -2396,12 +2446,15 @@ export default function DataAGV() {
                           type="select"
                           placeholder="Room"
                           onChange={(e) => {
-                            setRoom_room(e);
+                            setRoomInput(e);
                           }}
                         >
                           {room_list.map((rooms) => (
                             <option
-                              selected={rooms.value == objectLoad.room}
+                              selected={
+                                rooms.value == objectLoad.room ||
+                                rooms.value == roomInput
+                              }
                               key={rooms.value}
                               value={rooms.value}
                             >
@@ -2457,12 +2510,15 @@ export default function DataAGV() {
                           type="select"
                           placeholder="Room"
                           onChange={(e) => {
-                            setModel(e);
+                            setModel({
+                              label: e.label,
+                              value: e.value,
+                            });
                           }}
                         >
                           {prod_name.map((item) => (
                             <option
-                              selected={item.value == objectLoad.model}
+                              selected={item.label == objectLoad.name}
                               key={item.value}
                               value={item.value}
                             >
@@ -2506,16 +2562,28 @@ export default function DataAGV() {
                       >
                         Time table (ตารางเวลา)
                       </label>
-                      <Select
+                      <select
+                        style={{ textAlign: "center" }}
                         className="select_tb"
-                        placeholder="Select "
+                        placeholder="Shift"
                         onChange={(e) => {
-                          setTable_time(e);
+                          setTimeTableInput(e);
                         }}
-                        name="time_tab"
-                        type="select"
-                        options={time_table}
-                      />
+                        name="shift"
+                      >
+                        {time_table.map((item) => (
+                          <option
+                            selected={
+                              item.value == objectLoad.period_code ||
+                              item.value == timeTableInput
+                            }
+                            key={item.value}
+                            value={item.value}
+                          >
+                            {item.label}
+                          </option>
+                        ))}
+                      </select>
 
                       <Button
                         variant="secondary"
@@ -3198,6 +3266,7 @@ export default function DataAGV() {
                           ผู้รับผิดชอบ
                         </label>
                         <input
+                          style={{ textAlign: "center" }}
                           type="resp_person"
                           className="form-control"
                           class="input-control"
@@ -3205,6 +3274,7 @@ export default function DataAGV() {
                           placeholder=" Resp_person"
                           onChange={handleChange}
                           name="resp_person"
+                          value={objectForm["resp_person"]}
                         />
                       </div>
 
@@ -3216,6 +3286,7 @@ export default function DataAGV() {
                           Section code (รหัสแผนก)
                         </label>
                         <input
+                          style={{ textAlign: "center" }}
                           type="section_code"
                           className="form-control"
                           class="input-control"
@@ -3223,6 +3294,7 @@ export default function DataAGV() {
                           placeholder="Section Code"
                           onChange={handleChange}
                           name="section_code"
+                          value={objectForm["section_code"]}
                         />
                       </div>
 
@@ -3234,6 +3306,7 @@ export default function DataAGV() {
                           Target (เป้าหมายในหนึ่งวัน)
                         </label>
                         <input
+                          style={{ textAlign: "center" }}
                           type="target"
                           className="form-control"
                           class="input-control"
@@ -3241,6 +3314,7 @@ export default function DataAGV() {
                           placeholder=" Target"
                           onChange={handleChange}
                           name="target"
+                          value={objectForm["target"]}
                         />
                       </div>
 
@@ -3252,6 +3326,7 @@ export default function DataAGV() {
                           Start count (ค่าเริ่มต้นการนับ)
                         </label>
                         <input
+                          style={{ textAlign: "center" }}
                           type="st_count"
                           className="form-control"
                           class="input-control"
@@ -3259,6 +3334,7 @@ export default function DataAGV() {
                           placeholder="start count"
                           onChange={handleChange}
                           name="st_count"
+                          value={objectForm["st_count"]}
                         />
                       </div>
 
@@ -3270,6 +3346,7 @@ export default function DataAGV() {
                           Counter (การบวกแต่ละครั้ง)
                         </label>
                         <input
+                          style={{ textAlign: "center" }}
                           type="count"
                           className="form-control"
                           class="input-control"
@@ -3277,6 +3354,7 @@ export default function DataAGV() {
                           placeholder=" Count"
                           onChange={handleChange}
                           name="count"
+                          value={objectForm["count"]}
                         />
                       </div>
 
@@ -3288,6 +3366,7 @@ export default function DataAGV() {
                           Take time (RU)
                         </label>
                         <input
+                          style={{ textAlign: "center" }}
                           type="take_time"
                           className="form-control"
                           class="input-control"
@@ -3295,6 +3374,7 @@ export default function DataAGV() {
                           placeholder=" Take_time"
                           onChange={handleChange}
                           name="take_time"
+                          value={objectForm["take_time"]}
                         />
                       </div>
 
@@ -3306,6 +3386,7 @@ export default function DataAGV() {
                           Working time (Min.)
                         </label>
                         <input
+                          style={{ textAlign: "center" }}
                           type="working_time"
                           className="form-control"
                           class="input-control"
@@ -3313,6 +3394,7 @@ export default function DataAGV() {
                           placeholder=" Working_time"
                           onChange={handleChange}
                           name="working_time"
+                          value={objectForm["working_time"]}
                         />
                       </div>
 
@@ -3324,6 +3406,7 @@ export default function DataAGV() {
                           Operator Q'ty
                         </label>
                         <input
+                          style={{ textAlign: "center" }}
                           type="operator"
                           className="form-control"
                           class="input-control"
@@ -3331,6 +3414,7 @@ export default function DataAGV() {
                           placeholder=" 1"
                           onChange={handleChange}
                           name="operator"
+                          value={objectForm["operator"]}
                         />
                       </div>
 
@@ -3342,6 +3426,7 @@ export default function DataAGV() {
                           STD Time(Min.)
                         </label>
                         <input
+                          style={{ textAlign: "center" }}
                           type="std_time"
                           className="form-control"
                           class="input-control"
@@ -3349,6 +3434,7 @@ export default function DataAGV() {
                           placeholder=" 00"
                           onChange={handleChange}
                           name="std_time"
+                          value={objectForm["std_time"]}
                         />
                       </div>
 
@@ -3360,6 +3446,7 @@ export default function DataAGV() {
                           Defective limit
                         </label>
                         <input
+                          style={{ textAlign: "center" }}
                           type="defective"
                           className="form-control"
                           class="input-control"
@@ -3367,6 +3454,7 @@ export default function DataAGV() {
                           placeholder=" 1"
                           onChange={handleChange}
                           name="defective"
+                          value={objectForm["defective"]}
                         />
                       </div>
 
@@ -3378,6 +3466,7 @@ export default function DataAGV() {
                           Take Time Old{" "}
                         </label>
                         <input
+                          style={{ textAlign: "center" }}
                           type="std_old"
                           className="form-control"
                           class="input-control"
@@ -3385,11 +3474,11 @@ export default function DataAGV() {
                           placeholder=" 00"
                           onChange={handleChange}
                           name="std_old"
+                          value={objectForm["std_old"]}
                         />
                       </div>
                     </div>
-                    <div className="form-check mb-0.5">
-                    </div>
+                    <div className="form-check mb-0.5"></div>
                     <Button
                       type="submit"
                       variant="success"
