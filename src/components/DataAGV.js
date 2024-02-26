@@ -8,6 +8,7 @@ import Select from "react-select";
 import { TimePicker } from "antd";
 import moment from "moment";
 
+import Swal from 'sweetalert2'
 import "react-datepicker/dist/react-datepicker.css";
 
 var int = 0;
@@ -642,6 +643,12 @@ export default function DataAGV() {
         JSON.stringify(json)
       );
     }
+    Swal.fire({
+      title: 'Successful!',
+      text: 'Your request successful',
+      icon: 'success',
+      confirmButtonText: 'Cool'
+    })
     // client.publish('/AutoInput/config_react', JSON.stringify(json));
   }
 
@@ -2377,17 +2384,19 @@ export default function DataAGV() {
     <div>
       <div>
         <div className="LabelInfo">
-          <h3 style={{ marginLeft: "10%" }}>Input configuration</h3>
-          <img
-            style={img}
-            src={manual}
-            width="100"
-            height="80"
-            size="50"
-            alt="Johnson Pond"
-            onClick={linkpdf}
-          ></img>
+          <h3
+            style={{
+              textAlign: "left",
+              width: "80%",
+              margin: "auto",
+              marginLeft: "15%",
+              marginBottom: "50px"
+            }}
+          >
+            Input Configuration
+          </h3>
         </div>
+
         <div className="manual">
           {/* <button  onClick={linkpdf}
             >Print</button> */}
@@ -2403,150 +2412,195 @@ export default function DataAGV() {
               <div className="panelControl">
                 <div className="Panelbutton">
                   <form onSubmit={onSubmit}>
-                    {/* <div className="form-group">
-                            <select onChange={handleChange} name="select" type="select">
-                                <option value="grapefruit">Grapefruit</option>
-                                <option value="lime">Lime</option>
-                                <option value="coconut">Coconut</option>
-                                <option value="mango">Mango</option>
-                            </select>
-                            </div> */}
                     <div className="form-group">
-                      <div>
-                        <label
-                          for="exampleInputPassword1"
-                          className="label_name"
-                        >
-                          M/c No. (หมายเลขเครื่องอินพุต)
-                        </label>
-                        <Select
-                          className="select"
-                          placeholder="Mc no."
-                          onChange={(e) => {
-                            setMc_index(e);
-                          }}
-                          name="mc_id"
-                          type="select"
-                          options={mc_id}
-                          value={mc_index}
-                        />
+                      <div
+                        style={{
+                          marginBottom: "20px",
+                          display: "grid",
+                          gridTemplateColumns: "50% 50%",
+                        }}
+                      >
+                        <div>
+                          <label
+                            for="exampleInputPassword1"
+                            className="label_name"
+                          >
+                            M/c No. (หมายเลขเครื่อง)
+                          </label>
+                          <Select
+                            className="select-main"
+                            placeholder="Mc no."
+                            onChange={(e) => {
+                              setMc_index(e);
+                            }}
+                            name="mc_id"
+                            type="select"
+                            options={mc_id}
+                            value={mc_index}
+                          />
+                        </div>
+                        <div></div>
+                      </div>
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "50% 50%",
+                        }}
+                      >
+                        <div>
+                          <label
+                            for="exampleInputPassword1"
+                            className="label_name"
+                          >
+                            Room (ห้องที่ใช้)
+                          </label>
+
+                          <select
+                            style={{ textAlign: "center" }}
+                            className="select"
+                            type="select"
+                            placeholder="Room"
+                            onChange={(e) => {
+                              setRoomInput(e);
+                            }}
+                          >
+                            {room_list.map((rooms) => (
+                              <option
+                                selected={
+                                  rooms.value == objectLoad.room ||
+                                  rooms.value == roomInput
+                                }
+                                key={rooms.value}
+                                value={rooms.value}
+                              >
+                                {rooms.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div>
+                          <label
+                            for="exampleInputPassword1"
+                            className="label_name"
+                          >
+                            Group product
+                          </label>
+                          <select
+                            style={{ textAlign: "center" }}
+                            className="select"
+                            type="select"
+                            placeholder="Room"
+                            onChange={(e) => {
+                              setProd(e);
+                              client.publish(
+                                "/prod_name1",
+                                JSON.stringify({
+                                  value: e.target.value,
+                                })
+                              );
+                            }}
+                          >
+                            {myArray.map((item) => (
+                              <option
+                                selected={item.value == objectLoad.grp_code}
+                                key={item.value}
+                                value={item.value}
+                              >
+                                {item.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "50% 50%",
+                        }}
+                      >
+                        <div>
+                          <label
+                            for="exampleInputPassword1"
+                            className="label_name"
+                          >
+                            Model
+                          </label>
+                          <select
+                            style={{ textAlign: "center" }}
+                            className="select"
+                            type="select"
+                            placeholder="Room"
+                            onChange={(e) => {
+                              setModel({
+                                label: e.label,
+                                value: e.value,
+                              });
+                            }}
+                          >
+                            {prod_name.map((item) => (
+                              <option
+                                selected={item.label == objectLoad.name}
+                                key={item.value}
+                                value={item.value}
+                              >
+                                {item.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div>
+                          <label
+                            for="exampleInputPassword1"
+                            className="label_name"
+                          >
+                            Shift (กะ)
+                          </label>
+                          <select
+                            style={{ textAlign: "center" }}
+                            className="select"
+                            placeholder="Shift"
+                            onChange={(e) => {
+                              setShift(e);
+                            }}
+                            name="shift"
+                          >
+                            {options.map((item) => (
+                              <option
+                                selected={item.value == objectLoad.shift}
+                                key={item.value}
+                                value={item.value}
+                              >
+                                {item.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                       </div>
 
-                      <div>
+                      <div className="breakTime">
                         <label
                           for="exampleInputPassword1"
-                          className="label_name"
+                          className="label_name_tb"
                         >
-                          Room (ห้องที่ใช้)
-                        </label>
-
-                        <select
-                          style={{ textAlign: "center" }}
-                          className="select"
-                          type="select"
-                          placeholder="Room"
-                          onChange={(e) => {
-                            setRoomInput(e);
-                          }}
-                        >
-                          {room_list.map((rooms) => (
-                            <option
-                              selected={
-                                rooms.value == objectLoad.room ||
-                                rooms.value == roomInput
-                              }
-                              key={rooms.value}
-                              value={rooms.value}
-                            >
-                              {rooms.label}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <div>
-                        <label
-                          for="exampleInputPassword1"
-                          className="label_name"
-                        >
-                          Group product
+                          Time table (ตารางเวลา)
                         </label>
                         <select
                           style={{ textAlign: "center" }}
-                          className="select"
-                          type="select"
-                          placeholder="Room"
-                          onChange={(e) => {
-                            setProd(e);
-                            client.publish(
-                              "/prod_name1",
-                              JSON.stringify({
-                                value: e.target.value,
-                              })
-                            );
-                          }}
-                        >
-                          {myArray.map((item) => (
-                            <option
-                              selected={item.value == objectLoad.grp_code}
-                              key={item.value}
-                              value={item.value}
-                            >
-                              {item.label}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div>
-                        <label
-                          for="exampleInputPassword1"
-                          className="label_name"
-                        >
-                          Model
-                        </label>
-                        <select
-                          style={{ textAlign: "center" }}
-                          className="select"
-                          type="select"
-                          placeholder="Room"
-                          onChange={(e) => {
-                            setModel({
-                              label: e.label,
-                              value: e.value,
-                            });
-                          }}
-                        >
-                          {prod_name.map((item) => (
-                            <option
-                              selected={item.label == objectLoad.name}
-                              key={item.value}
-                              value={item.value}
-                            >
-                              {item.label}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div>
-                        <label
-                          for="exampleInputPassword1"
-                          className="label_name"
-                        >
-                          Shift (กะ)
-                        </label>
-                        <select
-                          style={{ textAlign: "center" }}
-                          className="select"
+                          className="select_tb"
                           placeholder="Shift"
                           onChange={(e) => {
-                            setShift(e);
+                            setTimeTableInput(e);
                           }}
                           name="shift"
                         >
-                          {options.map((item) => (
+                          {time_table.map((item) => (
                             <option
-                              selected={item.value == objectLoad.shift}
+                              selected={
+                                item.value == objectLoad.period_code ||
+                                item.value == timeTableInput
+                              }
                               key={item.value}
                               value={item.value}
                             >
@@ -2554,938 +2608,966 @@ export default function DataAGV() {
                             </option>
                           ))}
                         </select>
-                      </div>
 
-                      <label
-                        for="exampleInputPassword1"
-                        className="label_name_tb"
-                      >
-                        Time table (ตารางเวลา)
-                      </label>
-                      <select
-                        style={{ textAlign: "center" }}
-                        className="select_tb"
-                        placeholder="Shift"
-                        onChange={(e) => {
-                          setTimeTableInput(e);
-                        }}
-                        name="shift"
-                      >
-                        {time_table.map((item) => (
-                          <option
-                            selected={
-                              item.value == objectLoad.period_code ||
-                              item.value == timeTableInput
-                            }
-                            key={item.value}
-                            value={item.value}
-                          >
-                            {item.label}
-                          </option>
-                        ))}
-                      </select>
+                        <Button
+                          variant="secondary"
+                          className="ref"
+                          onClick={() => setShowText(!showText)}
+                        >
+                          Ref
+                        </Button>
 
-                      <Button
-                        variant="secondary"
-                        className="ref"
-                        onClick={() => setShowText(!showText)}
-                      >
-                        Ref
-                      </Button>
-
-                      {showText && (
-                        <div>
-                          <form>
-                            <div>
-                              <label
-                                for="exampleInputPassword1"
-                                className="label_name-name"
-                              >
-                                Name :
-                              </label>
-                              <input
-                                type="name_time"
-                                className="form-control"
-                                class="name-control"
-                                id="exampleInputPassword1"
-                                placeholder="name"
-                                onChange={handleChange_time}
-                                name="name_time"
-                              />
+                        {showText && (
+                          <div>
+                            <form>
                               <div>
-                                <label className="day">Time table</label>
+                                <label
+                                  for="exampleInputPassword1"
+                                  className="label_name-name"
+                                >
+                                  Name :
+                                </label>
+                                <input
+                                  type="name_time"
+                                  className="form-control"
+                                  class="name-control"
+                                  id="exampleInputPassword1"
+                                  placeholder="name"
+                                  onChange={handleChange_time}
+                                  name="name_time"
+                                />
+                                <div>
+                                  <label className="day">Time table</label>
+                                </div>
+
+                                <table align="center" class="table-name">
+                                  <td class="time_select_start">
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st1}
+                                        onChange={(time, timeString) => {
+                                          sett_time1(timeString);
+                                          setValueSt1(time);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st2}
+                                        onChange={(time, timeString) => {
+                                          sett_time2(timeString);
+                                          setValueSt2(time);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st3}
+                                        onChange={(time, timeString) => {
+                                          sett_time3(timeString);
+                                          setValueSt3(time);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st4}
+                                        onChange={(time, timeString) => {
+                                          sett_time4(timeString);
+                                          setValueSt4(time);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st5}
+                                        onChange={(time, timeString) => {
+                                          sett_time5(timeString);
+                                          setValueSt5(time);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st6}
+                                        onChange={(time, timeString) => {
+                                          sett_time6(timeString);
+                                          setValueSt6(time);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st7}
+                                        onChange={(time, timeString) => {
+                                          sett_time7(timeString);
+                                          setValueSt7(time);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st8}
+                                        onChange={(time, timeString) => {
+                                          sett_time8(timeString);
+                                          setValueSt8(time);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st9}
+                                        onChange={(time, timeString) => {
+                                          sett_time9(timeString);
+                                          setValueSt9(time);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st10}
+                                        onChange={(time, timeString) => {
+                                          sett_time10(timeString);
+                                          setValueSt10(time);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st11}
+                                        onChange={(time, timeString) => {
+                                          sett_time11(timeString);
+                                          setValueSt11(time);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st12}
+                                        onChange={(time, timeString) => {
+                                          sett_time12(timeString);
+                                          setValueSt12(time);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st13}
+                                        onChange={(time, timeString) => {
+                                          sett_time13(timeString);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st14}
+                                        onChange={(time, timeString) => {
+                                          sett_time14(timeString);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st15}
+                                        onChange={(time, timeString) => {
+                                          sett_time15(timeString);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st16}
+                                        onChange={(time, timeString) => {
+                                          sett_time16(timeString);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st17}
+                                        onChange={(time, timeString) => {
+                                          sett_time17(timeString);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st18}
+                                        onChange={(time, timeString) => {
+                                          sett_time18(timeString);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st19}
+                                        onChange={(time, timeString) => {
+                                          sett_time19(timeString);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st20}
+                                        onChange={(time, timeString) => {
+                                          sett_time20(timeString);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st21}
+                                        onChange={(time, timeString) => {
+                                          sett_time21(timeString);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st22}
+                                        onChange={(time, timeString) => {
+                                          sett_time22(timeString);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st23}
+                                        onChange={(time, timeString) => {
+                                          sett_time23(timeString);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st24}
+                                        onChange={(time, timeString) => {
+                                          sett_time24(timeString);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                  </td>
+                                  <td class="time_select_start">
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st25}
+                                        onChange={(time, timeString) => {
+                                          sett_time25(timeString);
+                                          setValueSt25(time);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st26}
+                                        onChange={(time, timeString) => {
+                                          sett_time26(timeString);
+                                          setValueSt26(time);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st27}
+                                        onChange={(time, timeString) => {
+                                          sett_time27(timeString);
+                                          setValueSt27(time);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st28}
+                                        onChange={(time, timeString) => {
+                                          sett_time28(timeString);
+                                          setValueSt28(time);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st29}
+                                        onChange={(time, timeString) => {
+                                          sett_time29(timeString);
+                                          setValueSt29(time);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st30}
+                                        onChange={(time, timeString) => {
+                                          sett_time30(timeString);
+                                          setValueSt30(time);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st31}
+                                        onChange={(time, timeString) => {
+                                          sett_time31(timeString);
+                                          setValueSt31(time);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st32}
+                                        onChange={(time, timeString) => {
+                                          sett_time32(timeString);
+                                          setValueSt32(time);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st33}
+                                        onChange={(time, timeString) => {
+                                          sett_time33(timeString);
+                                          setValueSt33(time);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st34}
+                                        onChange={(time, timeString) => {
+                                          sett_time34(timeString);
+                                          setValueSt34(time);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st35}
+                                        onChange={(time, timeString) => {
+                                          sett_time35(timeString);
+                                          setValueSt35(time);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st36}
+                                        onChange={(time, timeString) => {
+                                          sett_time36(timeString);
+                                          setValueSt36(time);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st37}
+                                        onChange={(time, timeString) => {
+                                          sett_time37(timeString);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st38}
+                                        onChange={(time, timeString) => {
+                                          sett_time38(timeString);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st39}
+                                        onChange={(time, timeString) => {
+                                          sett_time39(timeString);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st40}
+                                        onChange={(time, timeString) => {
+                                          sett_time40(timeString);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st41}
+                                        onChange={(time, timeString) => {
+                                          sett_time41(timeString);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st42}
+                                        onChange={(time, timeString) => {
+                                          sett_time42(timeString);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st43}
+                                        onChange={(time, timeString) => {
+                                          sett_time43(timeString);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st44}
+                                        onChange={(time, timeString) => {
+                                          sett_time44(timeString);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st45}
+                                        onChange={(time, timeString) => {
+                                          sett_time45(timeString);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st46}
+                                        onChange={(time, timeString) => {
+                                          sett_time46(timeString);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st47}
+                                        onChange={(time, timeString) => {
+                                          sett_time47(timeString);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                    <div>
+                                      <TimePicker
+                                        class="select-time"
+                                        format={format}
+                                        value={value_st48}
+                                        onChange={(time, timeString) => {
+                                          sett_time48(timeString);
+                                        }}
+                                        size="small"
+                                      />
+                                    </div>
+                                  </td>
+                                </table>
+
+                                {/* <label className="night" >Night</label> */}
                               </div>
 
-                              <table align="center" class="table-name">
-                                <td class="time_select_start">
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st1}
-                                      onChange={(time, timeString) => {
-                                        sett_time1(timeString);
-                                        setValueSt1(time);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st2}
-                                      onChange={(time, timeString) => {
-                                        sett_time2(timeString);
-                                        setValueSt2(time);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st3}
-                                      onChange={(time, timeString) => {
-                                        sett_time3(timeString);
-                                        setValueSt3(time);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st4}
-                                      onChange={(time, timeString) => {
-                                        sett_time4(timeString);
-                                        setValueSt4(time);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st5}
-                                      onChange={(time, timeString) => {
-                                        sett_time5(timeString);
-                                        setValueSt5(time);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st6}
-                                      onChange={(time, timeString) => {
-                                        sett_time6(timeString);
-                                        setValueSt6(time);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st7}
-                                      onChange={(time, timeString) => {
-                                        sett_time7(timeString);
-                                        setValueSt7(time);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st8}
-                                      onChange={(time, timeString) => {
-                                        sett_time8(timeString);
-                                        setValueSt8(time);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st9}
-                                      onChange={(time, timeString) => {
-                                        sett_time9(timeString);
-                                        setValueSt9(time);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st10}
-                                      onChange={(time, timeString) => {
-                                        sett_time10(timeString);
-                                        setValueSt10(time);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st11}
-                                      onChange={(time, timeString) => {
-                                        sett_time11(timeString);
-                                        setValueSt11(time);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st12}
-                                      onChange={(time, timeString) => {
-                                        sett_time12(timeString);
-                                        setValueSt12(time);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st13}
-                                      onChange={(time, timeString) => {
-                                        sett_time13(timeString);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st14}
-                                      onChange={(time, timeString) => {
-                                        sett_time14(timeString);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st15}
-                                      onChange={(time, timeString) => {
-                                        sett_time15(timeString);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st16}
-                                      onChange={(time, timeString) => {
-                                        sett_time16(timeString);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st17}
-                                      onChange={(time, timeString) => {
-                                        sett_time17(timeString);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st18}
-                                      onChange={(time, timeString) => {
-                                        sett_time18(timeString);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st19}
-                                      onChange={(time, timeString) => {
-                                        sett_time19(timeString);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st20}
-                                      onChange={(time, timeString) => {
-                                        sett_time20(timeString);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st21}
-                                      onChange={(time, timeString) => {
-                                        sett_time21(timeString);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st22}
-                                      onChange={(time, timeString) => {
-                                        sett_time22(timeString);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st23}
-                                      onChange={(time, timeString) => {
-                                        sett_time23(timeString);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st24}
-                                      onChange={(time, timeString) => {
-                                        sett_time24(timeString);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                </td>
-                                <td class="time_select_start">
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st25}
-                                      onChange={(time, timeString) => {
-                                        sett_time25(timeString);
-                                        setValueSt25(time);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st26}
-                                      onChange={(time, timeString) => {
-                                        sett_time26(timeString);
-                                        setValueSt26(time);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st27}
-                                      onChange={(time, timeString) => {
-                                        sett_time27(timeString);
-                                        setValueSt27(time);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st28}
-                                      onChange={(time, timeString) => {
-                                        sett_time28(timeString);
-                                        setValueSt28(time);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st29}
-                                      onChange={(time, timeString) => {
-                                        sett_time29(timeString);
-                                        setValueSt29(time);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st30}
-                                      onChange={(time, timeString) => {
-                                        sett_time30(timeString);
-                                        setValueSt30(time);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st31}
-                                      onChange={(time, timeString) => {
-                                        sett_time31(timeString);
-                                        setValueSt31(time);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st32}
-                                      onChange={(time, timeString) => {
-                                        sett_time32(timeString);
-                                        setValueSt32(time);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st33}
-                                      onChange={(time, timeString) => {
-                                        sett_time33(timeString);
-                                        setValueSt33(time);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st34}
-                                      onChange={(time, timeString) => {
-                                        sett_time34(timeString);
-                                        setValueSt34(time);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st35}
-                                      onChange={(time, timeString) => {
-                                        sett_time35(timeString);
-                                        setValueSt35(time);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st36}
-                                      onChange={(time, timeString) => {
-                                        sett_time36(timeString);
-                                        setValueSt36(time);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st37}
-                                      onChange={(time, timeString) => {
-                                        sett_time37(timeString);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st38}
-                                      onChange={(time, timeString) => {
-                                        sett_time38(timeString);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st39}
-                                      onChange={(time, timeString) => {
-                                        sett_time39(timeString);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st40}
-                                      onChange={(time, timeString) => {
-                                        sett_time40(timeString);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st41}
-                                      onChange={(time, timeString) => {
-                                        sett_time41(timeString);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st42}
-                                      onChange={(time, timeString) => {
-                                        sett_time42(timeString);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st43}
-                                      onChange={(time, timeString) => {
-                                        sett_time43(timeString);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st44}
-                                      onChange={(time, timeString) => {
-                                        sett_time44(timeString);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st45}
-                                      onChange={(time, timeString) => {
-                                        sett_time45(timeString);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st46}
-                                      onChange={(time, timeString) => {
-                                        sett_time46(timeString);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st47}
-                                      onChange={(time, timeString) => {
-                                        sett_time47(timeString);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                  <div>
-                                    <TimePicker
-                                      class="select-time"
-                                      format={format}
-                                      value={value_st48}
-                                      onChange={(time, timeString) => {
-                                        sett_time48(timeString);
-                                      }}
-                                      size="small"
-                                    />
-                                  </div>
-                                </td>
-                              </table>
+                              <div>
+                                {/* <TimePicker class="select-time" format="h:m:s a"  size="small"/> */}
+                              </div>
+                              <div></div>
 
-                              {/* <label className="night" >Night</label> */}
-                            </div>
-
-                            <div>
-                              {/* <TimePicker class="select-time" format="h:m:s a"  size="small"/> */}
-                            </div>
-                            <div></div>
-
-                            <div className="select-time">
-                              <Button
-                                variant="outline-info"
-                                type="button"
-                                onClick={onSubmit_time}
+                              <div className="select-time">
+                                <Button
+                                  variant="outline-info"
+                                  type="button"
+                                  onClick={onSubmit_time}
+                                >
+                                  ADD
+                                </Button>{" "}
+                                <Button
+                                  variant="outline-info"
+                                  type="button"
+                                  onClick={onSubmit_time_update}
+                                >
+                                  Edit/Update
+                                </Button>
+                              </div>
+                            </form>
+                          </div>
+                        )}
+                      </div>
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "50% 50%",
+                        }}
+                      >
+                        <div>
+                          <label
+                            for="exampleInputPassword1"
+                            className="label_name"
+                          >
+                            M/C No. Output
+                          </label>
+                          <select
+                            style={{ textAlign: "center" }}
+                            className="select"
+                            placeholder="M/C"
+                            onChange={(e) => {
+                              setM_c(e);
+                            }}
+                            name="mc"
+                          >
+                            {mc.map((item) => (
+                              <option
+                                selected={item.value == objectLoad.mc}
+                                key={item.value}
+                                value={item.value}
                               >
-                                ADD
-                              </Button>{" "}
-                              <Button
-                                variant="outline-info"
-                                type="button"
-                                onClick={onSubmit_time_update}
-                              >
-                                Edit/Update
-                              </Button>
-                            </div>
-                          </form>
+                                {item.label}
+                              </option>
+                            ))}
+                          </select>
                         </div>
-                      )}
-                      <div>
-                        <label
-                          for="exampleInputPassword1"
-                          className="label_name"
-                        >
-                          M/C No. Output (หมายเลขเครื่องเอาท์พุต)
-                        </label>
-                        <select
-                          style={{ textAlign: "center" }}
-                          className="select"
-                          placeholder="M/C"
-                          onChange={(e) => {
-                            setM_c(e);
-                          }}
-                          name="mc"
-                        >
-                          {mc.map((item) => (
-                            <option
-                              selected={item.value == objectLoad.mc}
-                              key={item.value}
-                              value={item.value}
-                            >
-                              {item.label}
-                            </option>
-                          ))}
-                        </select>
+
+                        <div>
+                          <label
+                            for="exampleInputPassword1"
+                            className="label_name"
+                          >
+                            Line (Ex. A0,A1)
+                          </label>
+                          <select
+                            style={{ textAlign: "center" }}
+                            className="select"
+                            placeholder="Ex.A0,A1"
+                            onChange={(e) => {
+                              setLine(e);
+                            }}
+                            name="line_no"
+                          >
+                            {line_no.map((item) => (
+                              <option
+                                selected={item.value == objectLoad.line_no}
+                                key={item.value}
+                                value={item.value}
+                              >
+                                {item.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                       </div>
 
-                      <div>
-                        <label
-                          for="exampleInputPassword1"
-                          className="label_name"
-                        >
-                          Line (Ex. A0,A1)
-                        </label>
-                        <select
-                          style={{ textAlign: "center" }}
-                          className="select"
-                          placeholder="Ex.A0,A1"
-                          onChange={(e) => {
-                            setLine(e);
-                          }}
-                          name="line_no"
-                        >
-                          {line_no.map((item) => (
-                            <option
-                              selected={item.value == objectLoad.line_no}
-                              key={item.value}
-                              value={item.value}
-                            >
-                              {item.label}
-                            </option>
-                          ))}
-                        </select>
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "50% 50%",
+                        }}
+                      >
+                        <div>
+                          <label
+                            for="exampleInputPassword1"
+                            className="label_name"
+                          >
+                            ผู้รับผิดชอบ
+                          </label>
+                          <input
+                            style={{ textAlign: "center" }}
+                            type="resp_person"
+                            className="form-control"
+                            class="input-control"
+                            id="exampleInputPassword1"
+                            placeholder=" Resp_person"
+                            onChange={handleChange}
+                            name="resp_person"
+                            value={objectForm["resp_person"]}
+                          />
+                        </div>
+
+                        <div>
+                          <label
+                            for="exampleInputPassword1"
+                            className="label_name"
+                          >
+                            Section code
+                          </label>
+                          <input
+                            style={{ textAlign: "center" }}
+                            type="section_code"
+                            className="form-control"
+                            class="input-control"
+                            id="exampleInputPassword1"
+                            placeholder="Section Code"
+                            onChange={handleChange}
+                            name="section_code"
+                            value={objectForm["section_code"]}
+                          />
+                        </div>
                       </div>
 
-                      <div>
-                        <label
-                          for="exampleInputPassword1"
-                          className="label_name"
-                        >
-                          ผู้รับผิดชอบ
-                        </label>
-                        <input
-                          style={{ textAlign: "center" }}
-                          type="resp_person"
-                          className="form-control"
-                          class="input-control"
-                          id="exampleInputPassword1"
-                          placeholder=" Resp_person"
-                          onChange={handleChange}
-                          name="resp_person"
-                          value={objectForm["resp_person"]}
-                        />
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "50% 50%",
+                        }}
+                      >
+                        <div>
+                          <label
+                            for="exampleInputPassword1"
+                            className="label_name"
+                          >
+                            Target (เป้าหมาย)
+                          </label>
+                          <input
+                            style={{ textAlign: "center" }}
+                            type="target"
+                            className="form-control"
+                            class="input-control"
+                            id="exampleInputPassword1"
+                            placeholder=" Target"
+                            onChange={handleChange}
+                            name="target"
+                            value={objectForm["target"]}
+                          />
+                        </div>
+
+                        <div>
+                          <label
+                            for="exampleInputPassword1"
+                            className="label_name"
+                          >
+                            Start count (เริ่มต้น)
+                          </label>
+                          <input
+                            style={{ textAlign: "center" }}
+                            type="st_count"
+                            className="form-control"
+                            class="input-control"
+                            id="exampleInputPassword1"
+                            placeholder="start count"
+                            onChange={handleChange}
+                            name="st_count"
+                            value={objectForm["st_count"]}
+                          />
+                        </div>
                       </div>
 
-                      <div>
-                        <label
-                          for="exampleInputPassword1"
-                          className="label_name"
-                        >
-                          Section code (รหัสแผนก)
-                        </label>
-                        <input
-                          style={{ textAlign: "center" }}
-                          type="section_code"
-                          className="form-control"
-                          class="input-control"
-                          id="exampleInputPassword1"
-                          placeholder="Section Code"
-                          onChange={handleChange}
-                          name="section_code"
-                          value={objectForm["section_code"]}
-                        />
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "50% 50%",
+                        }}
+                      >
+                        <div>
+                          <label
+                            for="exampleInputPassword1"
+                            className="label_name"
+                          >
+                            Counter (การบวกแต่ละครั้ง)
+                          </label>
+                          <input
+                            style={{ textAlign: "center" }}
+                            type="count"
+                            className="form-control"
+                            class="input-control"
+                            id="exampleInputPassword1"
+                            placeholder=" Count"
+                            onChange={handleChange}
+                            name="count"
+                            value={objectForm["count"]}
+                          />
+                        </div>
+
+                        <div>
+                          <label
+                            for="exampleInputPassword1"
+                            className="label_name"
+                          >
+                            Take time (RU)
+                          </label>
+                          <input
+                            style={{ textAlign: "center" }}
+                            type="take_time"
+                            className="form-control"
+                            class="input-control"
+                            id="exampleInputPassword1"
+                            placeholder=" Take_time"
+                            onChange={handleChange}
+                            name="take_time"
+                            value={objectForm["take_time"]}
+                          />
+                        </div>
                       </div>
 
-                      <div>
-                        <label
-                          for="exampleInputPassword1"
-                          className="label_name"
-                        >
-                          Target (เป้าหมายในหนึ่งวัน)
-                        </label>
-                        <input
-                          style={{ textAlign: "center" }}
-                          type="target"
-                          className="form-control"
-                          class="input-control"
-                          id="exampleInputPassword1"
-                          placeholder=" Target"
-                          onChange={handleChange}
-                          name="target"
-                          value={objectForm["target"]}
-                        />
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "50% 50%",
+                        }}
+                      >
+                        <div>
+                          <label
+                            for="exampleInputPassword1"
+                            className="label_name"
+                          >
+                            Working time (Min.)
+                          </label>
+                          <input
+                            style={{ textAlign: "center" }}
+                            type="working_time"
+                            className="form-control"
+                            class="input-control"
+                            id="exampleInputPassword1"
+                            placeholder=" Working_time"
+                            onChange={handleChange}
+                            name="working_time"
+                            value={objectForm["working_time"]}
+                          />
+                        </div>
+
+                        <div>
+                          <label
+                            for="exampleInputPassword1"
+                            className="label_name"
+                          >
+                            Operator Q'ty
+                          </label>
+                          <input
+                            style={{ textAlign: "center" }}
+                            type="operator"
+                            className="form-control"
+                            class="input-control"
+                            id="exampleInputPassword1"
+                            placeholder=" 1"
+                            onChange={handleChange}
+                            name="operator"
+                            value={objectForm["operator"]}
+                          />
+                        </div>
                       </div>
 
-                      <div>
-                        <label
-                          for="exampleInputPassword1"
-                          className="label_name"
-                        >
-                          Start count (ค่าเริ่มต้นการนับ)
-                        </label>
-                        <input
-                          style={{ textAlign: "center" }}
-                          type="st_count"
-                          className="form-control"
-                          class="input-control"
-                          id="exampleInputPassword1"
-                          placeholder="start count"
-                          onChange={handleChange}
-                          name="st_count"
-                          value={objectForm["st_count"]}
-                        />
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "50% 50%",
+                        }}
+                      >
+                        <div>
+                          <label
+                            for="exampleInputPassword1"
+                            className="label_name"
+                          >
+                            STD Time(Min.)
+                          </label>
+                          <input
+                            style={{ textAlign: "center" }}
+                            type="std_time"
+                            className="form-control"
+                            class="input-control"
+                            id="exampleInputPassword1"
+                            placeholder=" 00"
+                            onChange={handleChange}
+                            name="std_time"
+                            value={objectForm["std_time"]}
+                          />
+                        </div>
+
+                        <div>
+                          <label
+                            for="exampleInputPassword1"
+                            className="label_name"
+                          >
+                            Defective limit
+                          </label>
+                          <input
+                            style={{ textAlign: "center" }}
+                            type="defective"
+                            className="form-control"
+                            class="input-control"
+                            id="exampleInputPassword1"
+                            placeholder=" 1"
+                            onChange={handleChange}
+                            name="defective"
+                            value={objectForm["defective"]}
+                          />
+                        </div>
                       </div>
 
-                      <div>
-                        <label
-                          for="exampleInputPassword1"
-                          className="label_name"
-                        >
-                          Counter (การบวกแต่ละครั้ง)
-                        </label>
-                        <input
-                          style={{ textAlign: "center" }}
-                          type="count"
-                          className="form-control"
-                          class="input-control"
-                          id="exampleInputPassword1"
-                          placeholder=" Count"
-                          onChange={handleChange}
-                          name="count"
-                          value={objectForm["count"]}
-                        />
-                      </div>
-
-                      <div>
-                        <label
-                          for="exampleInputPassword1"
-                          className="label_name"
-                        >
-                          Take time (RU)
-                        </label>
-                        <input
-                          style={{ textAlign: "center" }}
-                          type="take_time"
-                          className="form-control"
-                          class="input-control"
-                          id="exampleInputPassword1"
-                          placeholder=" Take_time"
-                          onChange={handleChange}
-                          name="take_time"
-                          value={objectForm["take_time"]}
-                        />
-                      </div>
-
-                      <div>
-                        <label
-                          for="exampleInputPassword1"
-                          className="label_name"
-                        >
-                          Working time (Min.)
-                        </label>
-                        <input
-                          style={{ textAlign: "center" }}
-                          type="working_time"
-                          className="form-control"
-                          class="input-control"
-                          id="exampleInputPassword1"
-                          placeholder=" Working_time"
-                          onChange={handleChange}
-                          name="working_time"
-                          value={objectForm["working_time"]}
-                        />
-                      </div>
-
-                      <div>
-                        <label
-                          for="exampleInputPassword1"
-                          className="label_name"
-                        >
-                          Operator Q'ty
-                        </label>
-                        <input
-                          style={{ textAlign: "center" }}
-                          type="operator"
-                          className="form-control"
-                          class="input-control"
-                          id="exampleInputPassword1"
-                          placeholder=" 1"
-                          onChange={handleChange}
-                          name="operator"
-                          value={objectForm["operator"]}
-                        />
-                      </div>
-
-                      <div>
-                        <label
-                          for="exampleInputPassword1"
-                          className="label_name"
-                        >
-                          STD Time(Min.)
-                        </label>
-                        <input
-                          style={{ textAlign: "center" }}
-                          type="std_time"
-                          className="form-control"
-                          class="input-control"
-                          id="exampleInputPassword1"
-                          placeholder=" 00"
-                          onChange={handleChange}
-                          name="std_time"
-                          value={objectForm["std_time"]}
-                        />
-                      </div>
-
-                      <div>
-                        <label
-                          for="exampleInputPassword1"
-                          className="label_name"
-                        >
-                          Defective limit
-                        </label>
-                        <input
-                          style={{ textAlign: "center" }}
-                          type="defective"
-                          className="form-control"
-                          class="input-control"
-                          id="exampleInputPassword1"
-                          placeholder=" 1"
-                          onChange={handleChange}
-                          name="defective"
-                          value={objectForm["defective"]}
-                        />
-                      </div>
-
-                      <div>
-                        <label
-                          for="exampleInputPassword1"
-                          className="label_name"
-                        >
-                          Take Time Old{" "}
-                        </label>
-                        <input
-                          style={{ textAlign: "center" }}
-                          type="std_old"
-                          className="form-control"
-                          class="input-control"
-                          id="exampleInputPassword1"
-                          placeholder=" 00"
-                          onChange={handleChange}
-                          name="std_old"
-                          value={objectForm["std_old"]}
-                        />
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "50% 50%",
+                        }}
+                      >
+                        <div>
+                          <label
+                            for="exampleInputPassword1"
+                            className="label_name"
+                          >
+                            Take Time Old{" "}
+                          </label>
+                          <input
+                            style={{ textAlign: "center" }}
+                            type="std_old"
+                            className="form-control"
+                            class="input-control"
+                            id="exampleInputPassword1"
+                            placeholder=" 00"
+                            onChange={handleChange}
+                            name="std_old"
+                            value={objectForm["std_old"]}
+                          />
+                        </div>
                       </div>
                     </div>
                     <div className="form-check mb-0.5"></div>
-                    <Button
-                      type="submit"
-                      variant="success"
-                      className="btn btn-primary"
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "50% 50%",
+                      }}
                     >
-                      Submit
-                    </Button>
+                      <div></div>
+                      <Button
+                        type="submit"
+                        variant="success"
+                        className="btn btn-primary"
+                      >
+                        Submit
+                      </Button>
+                    </div>
                   </form>
                 </div>
               </div>
